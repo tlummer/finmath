@@ -53,6 +53,15 @@ public class Ex2 {
 		System.out.println("Mean PiErrors: " + mean(PiErrors));
 		System.out.println("STD PiErrors: " + STD(PiErrors));
 		
+		System.out.println("");
+		System.out.println("Excercise 3");
+		System.out.println("");
+		
+		System.out.println("Trapezsin: " + TrapezSin(-Math.PI, Math.PI, 100));
+		System.out.println("MCSIn: " + SinMCInt(-Math.PI, Math.PI, 100));
+		
+		
+		
 		
 	}
 	
@@ -95,12 +104,33 @@ public class Ex2 {
 			
 	}
 	
-//	private static SinMCInt(double a, double b, int n){
+	private static double SinMCInt(double a, double b, int n){
 		
-	//	for (int i = 0;to)
+		double sum = 0.0;
 		
+		for (int i = 0;i<n;i++){
+			double x = a + (b-a) * Math.random();
+				sum += Math.sin(x);		
+		}
+			
+	return sum/n;
+	
+	}
+	
+	
+	private static double TrapezSin(double a, double b, int n){
 		
+		double sum = 0.0;
+		double step = (a-b)/n;
 		
+		for (int i = 0;i<n;i++){
+			
+				sum += Math.sin(a+i*step)+Math.sin(a+(i+1)*step);		
+		}
+			
+	return sum/2 * step;
+	
+	}
 	
 	
 }
