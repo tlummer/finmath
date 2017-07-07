@@ -15,6 +15,9 @@ public class GammaRandomVariable implements RandomVariable {
 	@Override
 	public double generate() {
 		// TODO Auto-generated method stub
+		
+		
+		
 		return 0;
 	}
 

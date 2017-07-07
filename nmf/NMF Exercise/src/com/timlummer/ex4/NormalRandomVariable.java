@@ -8,7 +8,7 @@ public class NormalRandomVariable implements RandomVariable{
 	private double sigma;
 	NormalDistribution nd;
 	
-	NormalRandomVariable (double my, double sigma){	
+	public NormalRandomVariable (double my, double sigma){	
 		this.my = my;
 		this.sigma = sigma;
 		nd = new NormalDistribution(my,sigma);
