@@ -61,4 +61,18 @@ public double getSampleStdDeviation(int n) {
 public double getStdDeviation() {
 	return 1/this.lambda;
 }
+
+@Override
+public double getParamterUpperBoundConfidenceInterval(double level,
+		MeanConfidenceIntegral confidenceIntervalCalculator) {
+
+	return 1.0/confidenceIntervalCalculator.getUpperBoundConfidenceInterval(level);
+}
+
+@Override
+public double getParamterLowerBoundConfidenceInterval(double level,
+		MeanConfidenceIntegral confidenceIntervalCalculator) {
+	// TODO Auto-generated method stub
+	return 1.0/confidenceIntervalCalculator.getLowerBoundConfidenceInterval(level);
+}
 }

@@ -1,5 +1,6 @@
 package com.timlummer.ex4;
-	public interface RandomVariable {
+
+public interface RandomVariable {
 		public double generate();
 		public double quantileFunction(double x);
 		double getMean();
@@ -8,4 +9,7 @@ package com.timlummer.ex4;
 		public double getSampleMean(int n); 
 		public double getSampleStdDeviation(int n);
 		double getStdDeviation();
+		double getParamterUpperBoundConfidenceInterval(double level, MeanConfidenceIntegral confidenceIntervalCalculator); 
+		double getParamterLowerBoundConfidenceInterval(double level, MeanConfidenceIntegral confidenceIntervalCalculator);
+		
 }

@@ -69,4 +69,48 @@ public class NormalRandomVariable implements RandomVariable{
 		return sigma;
 	}
 
+	@Override
+	public double getParamterUpperBoundConfidenceInterval(double level,
+			MeanConfidenceIntegral confidenceIntervalCalculator) {
+		
+		return confidenceIntervalCalculator.getLowerBoundConfidenceInterval(level);
+	}
+
+	@Override
+	public double getParamterLowerBoundConfidenceInterval(double level,
+			MeanConfidenceIntegral confidenceIntervalCalculator) {
+	
+		return confidenceIntervalCalculator.getLowerBoundConfidenceInterval(level);
+	}
+	
+	public double[] generateBoxMuller(){
+		
+		double[] Z = new double[2];
+		double u,v,r,s;
+		do{
+			u=2*Math.random()-1;
+			v=2*Math.random()-1;
+			r=u*u+v*v;
+		} while(r>1);
+		s=Math.sqrt(-2.0*Math.log(r)/r);
+		
+		Z[0] =sigma*v*s+my;
+		Z[1] =sigma*u*s+my;
+		
+		return Z;
+		
+		
+	}
+	
+	public double[] generateBivariateNormal(){
+		
+		double[] Z = new double[2];
+			
+		Z[0] = this.generate();
+		Z[1] = this.generate();
+		
+		return Z;
+		
+		
+	}
 }
