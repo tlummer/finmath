@@ -1,18 +1,22 @@
 package com.timlummer.ex6;
 
 import com.timlummer.ex4.*;
+
+import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.*;
 
 public class MyBrownianMotion {
 
 	private TimeDiscretization time;
-	private int dimension;
-	private double initialValue,
+	private double initialValue;
 	private int numberofPaths;
 	private int numberofFactors;
 	
 	private double [][][]brownianIncrements;
 	private double [][][]brownianPath;
+	private RandomVariableInterface[][] brownianRV;
+	
+	
 	
 	
 		
@@ -40,7 +44,7 @@ public class MyBrownianMotion {
 	}
 	
 	
-	public void generateBrownianMotion(Generator generator){
+	public void generateBrownianMotion(){
 		
 	int numberOfTimeSteps = time.getNumberOfTimeSteps();
 	double [] STD = new double[numberOfTimeSteps];
@@ -69,7 +73,39 @@ public class MyBrownianMotion {
 		}
 	}
 	
-	}
+	brownianRV = new net.finmath.stochastic.RandomVariableInterface[numberOfTimeSteps][numberofFactors];
 	
+	for(int t = 0; t<numberOfTimeSteps;t++){
+		for(int f = 0; f<numberofFactors; f++){
+			brownianRV[t][f] =	new net.finmath.montecarlo.RandomVariable(t, brownianPath[t][f]);
+		}
+	}
+		
+	}
+
+	public TimeDiscretization getTime() {
+		return time;
+	}
+
+	public int getNumberofPaths() {
+		return numberofPaths;
+	}
+
+	public int getNumberofFactors() {
+		return numberofFactors;
+	}
+
+	public double[][][] getBrownianIncrements() {
+		return brownianIncrements;
+	}
+
+	public double[][][] getBrownianPath() {
+		return brownianPath;
+	}
+
+	public RandomVariableInterface[][] getBrownianRV() {
+		return brownianRV;
+	}
+
 }
 
