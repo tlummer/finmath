@@ -2,19 +2,20 @@ package com.timlummer.ex6;
 
 import com.timlummer.ex4.*;
 
+import net.finmath.montecarlo.RandomVariable;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.time.*;
 
 public class MyBrownianMotion {
 
 	private TimeDiscretization time;
-	private double initialValue;
+	private double initialValue = 0.0;
 	private int numberofPaths;
 	private int numberofFactors;
 	
 	private double [][][]brownianIncrements;
 	private double [][][]brownianPath;
-	private RandomVariableInterface[][] brownianRV;
+	private RandomVariable[][] brownianRV;
 	
 	
 	
@@ -47,6 +48,8 @@ public class MyBrownianMotion {
 	public void generateBrownianMotion(){
 		
 	int numberOfTimeSteps = time.getNumberOfTimeSteps();
+	int numberofTimes = time.getNumberOfTimes();
+	
 	double [] STD = new double[numberOfTimeSteps];
 	
 	
@@ -55,6 +58,7 @@ public class MyBrownianMotion {
 	}
 	
 	brownianIncrements = new double[numberOfTimeSteps][numberofFactors][numberofPaths];
+	brownianPath = new double[numberofTimes][numberofFactors][numberofPaths];
 	
 	NormalRandomVariable NV = new NormalRandomVariable(0.0 , 1.0);
 		
@@ -66,18 +70,17 @@ public class MyBrownianMotion {
 			for(int t = 0; t<numberOfTimeSteps;t++){
 				
 				brownianIncrements[t][f][p]= NV.generate()*STD[t];
-				
 				brownianPath [t+1][f][p] = 	brownianPath [t][f][p] + brownianIncrements[t][f][p];
 				
 			}
 		}
 	}
 	
-	brownianRV = new net.finmath.stochastic.RandomVariableInterface[numberOfTimeSteps][numberofFactors];
+	brownianRV = new RandomVariable[numberofTimes][numberofFactors];
 	
-	for(int t = 0; t<numberOfTimeSteps;t++){
+	for(int t = 0; t<numberofTimes;t++){
 		for(int f = 0; f<numberofFactors; f++){
-			brownianRV[t][f] =	new net.finmath.montecarlo.RandomVariable(t, brownianPath[t][f]);
+			brownianRV[t][f] =	new RandomVariable(t, brownianPath[t][f]);
 		}
 	}
 		
@@ -106,6 +109,13 @@ public class MyBrownianMotion {
 	public RandomVariableInterface[][] getBrownianRV() {
 		return brownianRV;
 	}
-
+	
+	public RandomVariable[] getBrownianPathsOfGivenFactor(int factor) {
+        // brownianPaths[][factor-1]; Java is not happy with this, it is not an array to her.
+	RandomVariable[] paths=new RandomVariable[time.getNumberOfTimes()];
+	for (int i=0; i< paths.length; i++)
+		paths[i]=brownianRV[i][factor-1];
+	return paths;
+	}
 }
 
