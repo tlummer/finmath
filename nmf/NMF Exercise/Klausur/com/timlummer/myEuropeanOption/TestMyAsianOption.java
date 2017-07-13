@@ -7,7 +7,6 @@ import net.finmath.montecarlo.BrownianMotion;
 import net.finmath.montecarlo.assetderivativevaluation.AssetModelMonteCarloSimulationInterface;
 import net.finmath.montecarlo.assetderivativevaluation.BlackScholesModel;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
-import net.finmath.montecarlo.assetderivativevaluation.products.AsianOption;
 import net.finmath.montecarlo.assetderivativevaluation.products.EuropeanOption;
 import net.finmath.montecarlo.model.AbstractModel;
 import net.finmath.montecarlo.process.AbstractProcess;
@@ -15,7 +14,7 @@ import net.finmath.montecarlo.process.ProcessEulerScheme;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationInterface;
 
-public class TestMyOption {
+public class TestMyAsianOption {
 
 	public static void main(String[] args) throws Exception {
 		
@@ -30,6 +29,9 @@ public class TestMyOption {
 		double	deltaT				= 0.5;
 		
 		int		seed				= 31415;
+		
+		int numberofEvaltimesteps = 12;
+		
 
 		// Product properties
 		int		assetIndex = 0;
@@ -52,11 +54,16 @@ public class TestMyOption {
 		/*
 		 * Value a call option (using the product implementation)
 		 */
-		MyEuropeanOption europeanOption = new MyEuropeanOption(optionMaturity, optionStrike);
+		
+		double deltaEval = optionMaturity / numberofEvaltimesteps;
+		
+		TimeDiscretizationInterface timeDiscretizationAsian = new TimeDiscretization(0.0 , numberofEvaltimesteps, deltaEval);
+		
+		MyAsianOption europeanOption = new MyAsianOption(optionMaturity, optionStrike,timeDiscretizationAsian);
 		
 		double value = europeanOption.getValue(monteCarloBlackScholesModel);
 		
-		//double valueAnalytic = AnalyticFormulas.blackScholesOptionValue(initialValue, riskFreeRate, volatility, optionMaturity, optionStrike);
+		double valueAnalytic = AnalyticFormulas.blackScholesOptionValue(initialValue, riskFreeRate, volatility, optionMaturity, optionStrike);
 
 		System.out.println("value using Monte-Carlo.......: " + value);
 	

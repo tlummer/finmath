@@ -87,7 +87,7 @@ public class MyAsianOption extends AbstractAssetMonteCarloProduct {
 		Sum = Sum.div(timesForAveraging.getNumberOfTimes());
 		
 		// The payoff: values = max(underlying - strike, 0)
-		RandomVariableInterface values = values.sub(strike).floor(0.0);
+		RandomVariableInterface values = Sum.sub(strike).floor(0.0);
 
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);

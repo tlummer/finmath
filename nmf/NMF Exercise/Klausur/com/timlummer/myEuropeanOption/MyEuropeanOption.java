@@ -76,7 +76,7 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		RandomVariableInterface underlyingAtMaturity	= model.getAssetValue(maturity, underlyingIndex);
 
 		// The payoff: values = max(underlying - strike, 0) = V(T) = max(S(T)-K,0)
-		RandomVariableInterface values = underlyingAtMaturity.mult(2.0);//.apply(x -> x > strike ? 1.0 : 1.0);
+		RandomVariableInterface values = underlyingAtMaturity.apply(x -> x > strike ? 1.0 : 0.0);
 		
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);
@@ -89,7 +89,6 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		
 		values = values.mult(numeraireAtEvalTime).div(monteCarloProbabilitiesAtEvalTime);
 		
-		System.out.println("Hallo ich lebe");
 		
 		return values;
 	}
