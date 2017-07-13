@@ -73,20 +73,21 @@ public class MyAsianOption extends AbstractAssetMonteCarloProduct {
 	@Override
 	public RandomVariableInterface getValue(double evaluationTime, AssetModelMonteCarloSimulationInterface model) throws CalculationException {
 		// Calculate average
-		RandomVariableInterface values = model.getRandomVariableForConstant(0.0);
-		boolean triggered = false;
+		RandomVariableInterface Sum  = model.getRandomVariableForConstant(0.0);
 			
+
+		
 		for(double time : timesForAveraging) {
 			RandomVariableInterface underlying	= model.getAssetValue(time, underlyingIndex);
 								
 			
-			values = values.barrier(strike , 1.0 , 1.0 );
+			Sum = Sum.add(underlying);
 		
 		}
-		average = average.div(timesForAveraging.getNumberOfTimes());
+		Sum = Sum.div(timesForAveraging.getNumberOfTimes());
 		
 		// The payoff: values = max(underlying - strike, 0)
-		RandomVariableInterface values = average.sub(strike).floor(0.0);
+		RandomVariableInterface values = values.sub(strike).floor(0.0);
 
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);

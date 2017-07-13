@@ -5,6 +5,6 @@
 	<classpathentry kind="src" path="Solutions"/>
 	<classpathentry kind="src" path="Klausur"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/finmath lib"/>
-	<classpathentry kind="lib" path="C:/Users/Meister/Downloads/commons-math3-3.6.1/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="/finmath lib/lib/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

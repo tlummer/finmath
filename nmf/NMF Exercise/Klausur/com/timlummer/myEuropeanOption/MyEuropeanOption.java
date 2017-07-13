@@ -12,7 +12,7 @@ import net.finmath.stochastic.RandomVariableInterface;
 
 /**
  * Implements the valuation of a European option on a single asset.
- * 
+ * Tim Lummer based on Fries
  * Given a model for an asset <i>S</i>, the European option with strike <i>K</i>, maturity <i>T</i>
  * pays
  * <br>
@@ -24,7 +24,7 @@ import net.finmath.stochastic.RandomVariableInterface;
  * calling <code>getAverage</code> on this random variable will result in the value. Otherwise a
  * conditional expectation has to be applied.
  * 
- * @author Christian Fries
+ * @author Tim Lummer based on Fries
  * @version 1.3
  */
 public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
@@ -76,7 +76,7 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		RandomVariableInterface underlyingAtMaturity	= model.getAssetValue(maturity, underlyingIndex);
 
 		// The payoff: values = max(underlying - strike, 0) = V(T) = max(S(T)-K,0)
-		RandomVariableInterface values = underlyingAtMaturity.apply(x -> x > strike ? 1.0 : 0.0);
+		RandomVariableInterface values = underlyingAtMaturity.mult(2.0);//.apply(x -> x > strike ? 1.0 : 1.0);
 		
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);
@@ -88,7 +88,9 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		RandomVariableInterface	monteCarloProbabilitiesAtEvalTime	= model.getMonteCarloWeights(evaluationTime);
 		
 		values = values.mult(numeraireAtEvalTime).div(monteCarloProbabilitiesAtEvalTime);
-
+		
+		System.out.println("Hallo ich lebe");
+		
 		return values;
 	}
 }

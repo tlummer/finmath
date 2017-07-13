@@ -35,8 +35,7 @@ public class TestMyOption {
 		double	optionMaturity = 2.0;
 		
 		double	optionStrike = 1.05;
-		
-		
+				
 		// Create a model
 		AbstractModel model = new BlackScholesModel(initialValue, riskFreeRate, volatility);
 
@@ -52,13 +51,14 @@ public class TestMyOption {
 		/*
 		 * Value a call option (using the product implementation)
 		 */
-		EuropeanOption europeanOption = new EuropeanOption(optionMaturity, optionStrike);
+		MyEuropeanOption europeanOption = new MyEuropeanOption(optionMaturity, optionStrike);
+		
 		double value = europeanOption.getValue(monteCarloBlackScholesModel);
 		
 		double valueAnalytic = AnalyticFormulas.blackScholesOptionValue(initialValue, riskFreeRate, volatility, optionMaturity, optionStrike);
 
 		System.out.println("value using Monte-Carlo.......: " + value);
-		System.out.println("value using analytic formula..: " +  europeanOption.toString());
+	
 
 	}
 
