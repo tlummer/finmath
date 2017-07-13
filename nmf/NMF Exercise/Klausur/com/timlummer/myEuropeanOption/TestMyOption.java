@@ -58,7 +58,7 @@ public class TestMyOption {
 		double valueAnalytic = AnalyticFormulas.blackScholesOptionValue(initialValue, riskFreeRate, volatility, optionMaturity, optionStrike);
 
 		System.out.println("value using Monte-Carlo.......: " + value);
-		System.out.println("value using analytic formula..: " + valueAnalytic);
+		System.out.println("value using analytic formula..: " +  europeanOption.toString());
 
 	}
 
