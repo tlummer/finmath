@@ -19,9 +19,6 @@ import net.finmath.time.TimeDiscretizationInterface;
  * <br>
  * 	<i>A(T) = 1/n (S(T<sub>1</sub>)+ ... + S(T<sub>n</sub>))</i>
  * <br>
- * 
- * @author Christian Fries
- * @version 1.2
  */
 public class MyAsianOption extends AbstractAssetMonteCarloProduct {
 
@@ -73,21 +70,15 @@ public class MyAsianOption extends AbstractAssetMonteCarloProduct {
 	@Override
 	public RandomVariableInterface getValue(double evaluationTime, AssetModelMonteCarloSimulationInterface model) throws CalculationException {
 		// Calculate average
-		RandomVariableInterface Sum  = model.getRandomVariableForConstant(0.0);
-			
-
-		
+		RandomVariableInterface average = model.getRandomVariableForConstant(0.0);
 		for(double time : timesForAveraging) {
 			RandomVariableInterface underlying	= model.getAssetValue(time, underlyingIndex);
-								
-			
-			Sum = Sum.add(underlying);
-		
+			average = average.add(underlying);
 		}
-		Sum = Sum.div(timesForAveraging.getNumberOfTimes());
+		average = average.div(timesForAveraging.getNumberOfTimes());
 		
 		// The payoff: values = max(underlying - strike, 0)
-		RandomVariableInterface values = Sum.sub(strike).floor(0.0);
+		RandomVariableInterface values = average.sub(strike).floor(0.0);
 
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);
