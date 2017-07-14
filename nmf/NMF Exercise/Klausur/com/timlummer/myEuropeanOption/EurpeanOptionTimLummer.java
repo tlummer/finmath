@@ -6,13 +6,25 @@
 package com.timlummer.myEuropeanOption;
 
 import net.finmath.exception.CalculationException;
+import net.finmath.functions.AnalyticFormulas;
+import net.finmath.montecarlo.BrownianMotion;
 import net.finmath.montecarlo.assetderivativevaluation.AssetModelMonteCarloSimulationInterface;
+import net.finmath.montecarlo.assetderivativevaluation.BlackScholesModel;
+import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.assetderivativevaluation.products.AbstractAssetMonteCarloProduct;
+import net.finmath.montecarlo.assetderivativevaluation.products.EuropeanOption;
+import net.finmath.montecarlo.model.AbstractModel;
+import net.finmath.montecarlo.process.AbstractProcess;
+import net.finmath.montecarlo.process.ProcessEulerScheme;
 import net.finmath.stochastic.RandomVariableInterface;
+import net.finmath.time.TimeDiscretization;
+import net.finmath.time.TimeDiscretizationInterface;
 
 /**
  * Implements the valuation of a European option on a single asset.
+ * 
  * Tim Lummer based on Fries
+ * 
  * Given a model for an asset <i>S</i>, the European option with strike <i>K</i>, maturity <i>T</i>
  * pays
  * <br>
@@ -27,10 +39,11 @@ import net.finmath.stochastic.RandomVariableInterface;
  * @author Tim Lummer based on Fries
  * @version 1.3
  */
-public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
+public class EurpeanOptionTimLummer extends AbstractAssetMonteCarloProduct {
 
 	private final double maturity;
 	private final double strike;
+	private final double barrier;
 	private final Integer underlyingIndex;
 	private final String nameOfUnderliyng;
 
@@ -40,10 +53,11 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 	 * @param strike The strike K in the option payoff max(S(T)-K,0).
 	 * @param underlyingIndex The index of the underlying to be fetched from the model.
 	 */
-	public MyEuropeanOption(double maturity, double strike, int underlyingIndex) {
+	public EurpeanOptionTimLummer(double maturity, double strike, double barrier,int underlyingIndex) {
 		super();
 		this.maturity			= maturity;
 		this.strike				= strike;
+		this.barrier			= barrier;
 		this.underlyingIndex	= underlyingIndex;
 		this.nameOfUnderliyng	= null;		// Use underlyingIndex
 	}
@@ -53,8 +67,8 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 	 * @param maturity The maturity T in the option payoff max(S(T)-K,0)
 	 * @param strike The strike K in the option payoff max(S(T)-K,0).
 	 */
-	public MyEuropeanOption(double maturity, double strike) {
-		this(maturity, strike, 0);
+	public EurpeanOptionTimLummer(double maturity, double strike, double barrier) {
+		this(maturity, strike, barrier ,0);
 	}
 
 	/**
@@ -76,7 +90,10 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		RandomVariableInterface underlyingAtMaturity	= model.getAssetValue(maturity, underlyingIndex);
 
 		// The payoff: values = max(underlying - strike, 0) = V(T) = max(S(T)-K,0)
-		RandomVariableInterface values = underlyingAtMaturity.apply(x -> x > strike ? 1.0 : 0.0);
+		RandomVariableInterface values = underlyingAtMaturity.sub(strike).floor(0.0);
+		
+		//The payoff: Check the Barrier
+		values = values.apply(x ->  x < barrier ? x : 0.0);
 		
 		// Discounting...
 		RandomVariableInterface numeraireAtMaturity		= model.getNumeraire(maturity);
@@ -91,5 +108,55 @@ public class MyEuropeanOption extends AbstractAssetMonteCarloProduct {
 		
 		
 		return values;
+}	
+
+	public static void main(String[] args) throws Exception {
+		
+		// Model properties
+		double	initialValue   = 100;
+		double	riskFreeRate   = 0.04;
+		double	volatility     = 0.25;
+
+		// Process discretization properties
+		int		numberOfPaths		= 10000;
+		int		numberOfTimeSteps	= 10;
+		double	deltaT				= 0.1;
+		
+		int		seed				= 31415;
+
+		// Product properties
+		double	optionMaturity = 1.0;
+		double	optionStrike = 90.0;
+		
+		double Barrier = Double.MAX_VALUE;
+				
+		
+		// Create a model
+		AbstractModel model = new BlackScholesModel(initialValue, riskFreeRate, volatility);
+
+		// Create a time discretization
+		TimeDiscretizationInterface timeDiscretization = new TimeDiscretization(0.0 /* initial */, numberOfTimeSteps, deltaT);
+
+		// Create a corresponding MC process 	// net.finmath.montecarlo.process
+		AbstractProcess process = new ProcessEulerScheme(new BrownianMotion(timeDiscretization, 1 /* numberOfFactors */, numberOfPaths, seed));
+
+		// Using the process (Euler scheme), create an MC simulation of a Black-Scholes model
+		AssetModelMonteCarloSimulationInterface monteCarloBlackScholesModel = new MonteCarloAssetModel(model, process);
+
+		/*
+		 * Value a call option (using the product implementation)
+		 */
+		EurpeanOptionTimLummer europeanOption = new EurpeanOptionTimLummer(optionMaturity, optionStrike,Barrier);
+		EuropeanOption europeanOptionNormal = new EuropeanOption(optionMaturity, optionStrike);
+		
+		double value = europeanOption.getValue(monteCarloBlackScholesModel);
+		
+		double valueNormal = europeanOptionNormal.getValue(monteCarloBlackScholesModel);
+		
+		double valueAnalytic = AnalyticFormulas.blackScholesOptionValue(initialValue, riskFreeRate, volatility, optionMaturity, optionStrike);
+
+		System.out.println("Tim Lummers value using Monte-Carlo and Barrier Option.......: " + value);
+		System.out.println("Tim Lummers value using Monte-Carlo without Barrier Option.......: " + valueNormal);
+		System.out.println("Tim Lummers value Analytic without Barrier Option.......: " + valueAnalytic);
 	}
 }

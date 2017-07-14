@@ -1,5 +1,4 @@
-  package com.timlummer.myEuropeanOption;
-
+package com.timlummer.myEuropeanOption;
 
 
 import net.finmath.exception.CalculationException;
